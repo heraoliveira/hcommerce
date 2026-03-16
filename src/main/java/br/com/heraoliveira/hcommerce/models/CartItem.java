@@ -3,10 +3,11 @@ package br.com.heraoliveira.hcommerce.models;
 import br.com.heraoliveira.hcommerce.exception.InvalidDataException;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 public class CartItem {
     private final Product product;
-    private final int quantity;
+    private int quantity;
 
     public CartItem(Product product, int quantity) {
         validateProduct(product);
@@ -17,7 +18,7 @@ public class CartItem {
     }
 
     private static void validateProduct(Product product) {
-        if (product == null) throw new InvalidDataException("Product cannot be null");
+        if (product == null) throw new InvalidDataException("Product cannot be null.");
     }
 
     private static void validateQuantity(int quantity) {
@@ -28,10 +29,32 @@ public class CartItem {
         return product.getPrice().multiply(BigDecimal.valueOf(quantity));
     }
 
+    public void addQuantity(int newQuantity) {
+        validateQuantity(newQuantity);
+        this.quantity += newQuantity;
+    }
+
+    public void updateQuantity(int newQuantity) {
+        validateQuantity(newQuantity);
+        this.quantity = newQuantity;
+    }
+
     @Override
     public String toString() {
         return String.format("CartItem[product=%s, price=%s, quantity=%s, subtotal=%s]"
                 , product.getName(), product.getPrice() , quantity, calculateSubtotal());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CartItem cartItem)) return false;
+        return Objects.equals(product, cartItem.product);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(product);
     }
 
     public Product getProduct() {
