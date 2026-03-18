@@ -12,36 +12,40 @@ import java.util.List;
 public class Cart {
     private final List<CartItem> items = new ArrayList<>();
 
-    public void addItem(CartItem item) {
-        validateCartItem(item);
-        var optionalItem = items.stream().filter(i -> i.equals(item)).findFirst();
+    private static void validateProduct(Product product) {
+        if (product == null) throw new InvalidDataException("Product is null");
+    }
 
-        if (optionalItem.isPresent()) {
-            optionalItem.get().addQuantity(item.getQuantity());
+    public void addItem(Product product, int quantity) {
+        validateProduct(product);
+        if (quantity <= 0) throw new InvalidDataException("Quantity cannot be <= 0.");
+
+        var optionalCartItem = items.stream().filter(item -> item.getProduct().equals(product)).findFirst();
+
+        if (optionalCartItem.isPresent()) {
+            optionalCartItem.get().addQuantity(quantity);
         } else {
-            items.add(item);
+            items.add(new CartItem(product, quantity));
         }
     }
 
-    private static void validateCartItem(CartItem item) {
-        if (item == null) throw new InvalidDataException("CartItem cannot be null.");
+    public boolean removeItem(Product product) {
+        validateProduct(product);
+
+        return items.removeIf(item -> item.getProduct().equals(product));
     }
 
-    public boolean removeItem(CartItem item) {
-        validateCartItem(item);
-        return items.remove(item);
-    }
-
-    public void updateQuantity(CartItem item, int quantity) {
-        validateCartItem(item);
+    public void updateQuantity(Product product, int quantity) {
+        validateProduct(product);
         if (quantity < 0) throw new InvalidDataException("Quantity cannot be < 0.");
 
-        var optionalItem = items.stream().filter(i -> i.equals(item)).findFirst();
-        if (optionalItem.isPresent()) {
+        var optionalCartItem = items.stream().filter(item -> item.getProduct().equals(product)).findFirst();
+
+        if (optionalCartItem.isPresent()) {
             if (quantity == 0) {
-                removeItem(item);
-            }  else {
-                optionalItem.get().updateQuantity(quantity);
+                items.remove(optionalCartItem.get());
+            } else {
+                optionalCartItem.get().updateQuantity(quantity);
             }
         } else  {
             throw new ProductNotFoundException("Product not found.");
