@@ -1,12 +1,14 @@
 package br.com.heraoliveira.hcommerce.models;
 
+import br.com.heraoliveira.hcommerce.exception.InvalidCepException;
 import br.com.heraoliveira.hcommerce.exception.InvalidDataException;
+import br.com.heraoliveira.hcommerce.util.ZipValidation;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record Address(
-        @JsonProperty("cep") String zipcode,
+        @JsonProperty("cep") String zip,
         @JsonProperty("logradouro") String street,
         @JsonProperty("bairro") String neighborhood,
         @JsonProperty("localidade") String city,
@@ -14,8 +16,8 @@ public record Address(
 ) {
 
     public Address {
-        if (zipcode == null || zipcode.isBlank())
-            throw new InvalidDataException("Cep cannot be null or blank.");
+        if (!ZipValidation.isValid(zip))
+            throw new InvalidCepException("ZIP is invalid.");
         if (street == null || street.isBlank())
             throw new InvalidDataException("Street cannot be null or blank.");
         if (neighborhood == null || neighborhood.isBlank())

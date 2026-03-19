@@ -23,7 +23,7 @@ public class Customer {
     }
 
     private static void validateEmail(String email) {
-        if (!EmailValidation.validateEmail(email)) throw new InvalidDataException("Email is not valid.");
+        if (!EmailValidation.isValid(email)) throw new InvalidDataException("Email is not valid.");
     }
 
     private static void validateAddress(Address address) {

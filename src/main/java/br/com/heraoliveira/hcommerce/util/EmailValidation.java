@@ -6,7 +6,7 @@ public class EmailValidation {
     private EmailValidation() {
     }
 
-    public static boolean validateEmail(String email) {
-        return email != null &&  !email.isBlank() && email.matches(EMAIL_REGEX) ;
+    public static boolean isValid(String email) {
+        return email != null && !email.isBlank() && email.matches(EMAIL_REGEX) ;
     }
 }

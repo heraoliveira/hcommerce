@@ -1,7 +1,6 @@
 package br.com.heraoliveira.hcommerce.models;
 
 import br.com.heraoliveira.hcommerce.exception.InvalidDataException;
-import br.com.heraoliveira.hcommerce.exception.ProductNotFoundException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -31,11 +30,10 @@ public class Cart {
 
     public boolean removeItem(Product product) {
         validateProduct(product);
-
         return items.removeIf(item -> item.getProduct().equals(product));
     }
 
-    public void updateQuantity(Product product, int quantity) {
+    public boolean updateQuantity(Product product, int quantity) {
         validateProduct(product);
         if (quantity < 0) throw new InvalidDataException("Quantity cannot be < 0.");
 
@@ -43,12 +41,13 @@ public class Cart {
 
         if (optionalCartItem.isPresent()) {
             if (quantity == 0) {
-                items.remove(optionalCartItem.get());
+                return items.remove(optionalCartItem.get());
             } else {
                 optionalCartItem.get().updateQuantity(quantity);
+                return true;
             }
         } else  {
-            throw new ProductNotFoundException("Product not found.");
+            return false;
         }
     }
 

@@ -5,11 +5,13 @@ import br.com.heraoliveira.hcommerce.exception.InvalidDataException;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Collections;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Order {
     private static long nextId = 1;
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     private final long id;
     private final LocalDateTime orderDate;
@@ -35,13 +37,12 @@ public class Order {
     }
 
     private static void validateItems(List<CartItem> items) {
-        if (items == null || items.isEmpty()) throw new InvalidCartException("Order cannot be empty or null.");
+        if (items == null || items.isEmpty()) throw new InvalidCartException("Order must have at least one item.");
         if (items.stream().anyMatch(i -> i == null || i.getProduct() == null))
-            throw new InvalidCartException("Order item cannot be null.");
+            throw new InvalidCartException("Order items must contain valid products.");
     }
 
     private BigDecimal calculateTotal() {
-        validateItems(items);
         return items.stream().map(i-> i.calculateSubtotal())
                 .reduce(BigDecimal.ZERO, (a, b) -> a.add(b));
     }
@@ -55,16 +56,17 @@ public class Order {
     }
 
     public String getSummary() {
-        var products = items.stream().map(i -> String.format("%d qty. of %s"
-                , i.getQuantity(), i.getProduct().getName())).toList();
+        var products = items.stream().map(i -> String.format("- %d qty. of %s"
+                , i.getQuantity(), i.getProduct().getName())).collect(Collectors.joining("\n"));
         return String.format("""
                 Order ID: %s
                 Customer: %s
-                Items: %s
                 Status: %s
                 Date: %s
-                Total: %s
-                """, id, customer.getName(), products, orderStatus, orderDate, total);
+                Total: R$ %s
+                Order items:
+                %s
+                """, id, customer.getName(), orderStatus, orderDate.format(formatter), total, products);
     }
 
     public long getId() {
@@ -80,7 +82,7 @@ public class Order {
     }
 
     public List<CartItem> getItems() {
-        return Collections.unmodifiableList(items);
+        return items;
     }
 
     public BigDecimal getTotal() {
