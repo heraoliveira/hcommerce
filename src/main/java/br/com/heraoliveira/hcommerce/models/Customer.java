@@ -19,15 +19,17 @@ public class Customer {
     }
 
     private static void validateName(String name) {
-        if (name == null || name.isBlank()) throw new InvalidDataException("Name cannot be null or blank.");
+        if (name == null || name.isBlank()) throw new InvalidDataException("Validation Error: Name is " +
+                "required and cannot be null or blank.");
     }
 
     private static void validateEmail(String email) {
-        if (!EmailValidation.isValid(email)) throw new InvalidDataException("Email is not valid.");
+        if (!EmailValidation.isValid(email)) throw new InvalidDataException("Validation Error: Email format " +
+                "is invalid.");
     }
 
     private static void validateAddress(Address address) {
-        if (address == null) throw new InvalidDataException("Address cannot be null.");
+        if (address == null) throw new InvalidDataException("Validation Error: A valid customer address is required.");
     }
 
     @Override

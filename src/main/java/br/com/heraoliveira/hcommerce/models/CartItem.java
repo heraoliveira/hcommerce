@@ -1,5 +1,6 @@
 package br.com.heraoliveira.hcommerce.models;
 
+import br.com.heraoliveira.hcommerce.exception.InvalidCartException;
 import br.com.heraoliveira.hcommerce.exception.InvalidDataException;
 
 import java.math.BigDecimal;
@@ -18,11 +19,13 @@ public class CartItem {
     }
 
     private static void validateProduct(Product product) {
-        if (product == null) throw new InvalidDataException("Product cannot be null.");
+        if (product == null) throw new InvalidDataException("Validation Error: A valid product is required to " +
+                "create a cart item.");
     }
 
     private static void validateQuantity(int quantity) {
-        if (quantity <= 0) throw new InvalidDataException("Quantity cannot be <= 0.");
+        if (quantity <= 0) throw new InvalidCartException("Business Error: Quantity must be strictly " +
+                "greater than zero.");
     }
 
     public BigDecimal calculateSubtotal() {

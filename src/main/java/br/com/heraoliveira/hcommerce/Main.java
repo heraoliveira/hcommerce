@@ -1,13 +1,7 @@
 package br.com.heraoliveira.hcommerce;
 
-import br.com.heraoliveira.hcommerce.exception.InvalidCartException;
-import br.com.heraoliveira.hcommerce.exception.InvalidCepException;
-import br.com.heraoliveira.hcommerce.exception.InvalidDataException;
-import br.com.heraoliveira.hcommerce.exception.ProductNotFoundException;
-import br.com.heraoliveira.hcommerce.models.Cart;
-import br.com.heraoliveira.hcommerce.models.Customer;
-import br.com.heraoliveira.hcommerce.models.Order;
-import br.com.heraoliveira.hcommerce.models.Product;
+import br.com.heraoliveira.hcommerce.models.*;
+import br.com.heraoliveira.hcommerce.service.ViaCepService;
 
 import java.math.BigDecimal;
 
@@ -15,49 +9,51 @@ public class Main {
     public static void main(String[] args) {
 
         try {
-            //INSTANTIATING CUSTOMER
-            Customer customer = new Customer("Customer 1", "customer@cust.com", null);
+            // Instantiating
 
-            // INSTANTIATING PRODUCT
-            Product product = new Product("Product 1", "Description 1", BigDecimal.valueOf(1));
-            Product product2 = new Product("Product 2", "Description 2", BigDecimal.valueOf(2));
-            Product product3 = new Product("Product 3", "Description 3", BigDecimal.valueOf(3));
+            Address address1 = ViaCepService.fetchAddress("49.01A0-04D0");
 
-            // INSTANTIATING CART
-            Cart cart = new Cart();
-            cart.addItem(product, 5);
-            cart.addItem(product2, 10);
-            cart.addItem(product3, 15);
+            Customer customer1 = new Customer("Customer 1", "customer@customer.com", address1);
 
-            System.out.println("List of products:");
-            cart.getItems().forEach(i ->
-                    System.out.printf("Product: %s - Price: %s - Quantity: %d - Subtotal: %s%n"
-                            , i.getProduct().getName(), i.getProduct().getPrice(), i.getQuantity()
-                            , i.calculateSubtotal()));
+            Product product1 = new Product("Product 1", "Description 1", BigDecimal.valueOf(10));
+            Product product2 = new Product("Product 2", "Description 2", BigDecimal.valueOf(20));
+            Product product3 = new Product("Product 3", "Description 3", BigDecimal.valueOf(30));
 
-            // TESTING ADDING DUPLICITY
+            Cart  cart = new Cart();
 
-            cart.addItem(product, 5);
-            System.out.println("List of products with duplicity:");
-            cart.getItems().forEach(i ->
-                    System.out.printf("Product: %s - Price: %s - Quantity: %d - Subtotal: %s%n"
-                            , i.getProduct().getName(), i.getProduct().getPrice(), i.getQuantity()
-                            , i.calculateSubtotal()));
+            // Cart
 
-            // TESTING REMOVING
+            cart.addItem(product1, 100);
+            cart.addItem(product2, 200);
+            cart.addItem(product3, 300);
 
-            if (cart.removeItem(product)) System.out.println(cart.getItems());
+            System.out.println("Items:");
+            cart.getItems().forEach(System.out::println);
 
-            // TESTING CHANGES QUANTITY
+            cart.removeItem(product2);
 
-            cart.updateQuantity(product3, 7);
-            System.out.println(cart.getItems());
+            System.out.println("\nItems after removal:");
+            cart.getItems().forEach(System.out::println);
 
-            Order order = new Order(customer, cart.getItems());
+            cart.updateQuantity(product3, 200);
+            cart.updateQuantity(product1, 150);
+
+            System.out.println("\nItems after quantity change:");
+            cart.getItems().forEach(System.out::println);
+
+            System.out.println("\nTotal after calculation: " + cart.calculateTotal());
+
+            // Order
+
+            Order order = new Order(customer1, cart.getItems());
+
+            System.out.println("\nOrder");
             System.out.println(order.getSummary());
-        } catch (IllegalStateException | InvalidCartException | InvalidCepException | InvalidDataException |
-                 ProductNotFoundException e) {
-            System.out.println("Exception: " + e.getMessage());;
+
+            order.finalizeOrder();
+            order.cancelOrder();
+        } catch (RuntimeException e) {
+            System.out.println(e.getMessage());
         }
     }
 }

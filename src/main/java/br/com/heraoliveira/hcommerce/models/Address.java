@@ -17,14 +17,14 @@ public record Address(
 
     public Address {
         if (!ZipValidation.isValid(zip))
-            throw new InvalidCepException("ZIP is invalid.");
+            throw new InvalidCepException("Validation Error: Invalid ZIP code format.");
         if (street == null || street.isBlank())
-            throw new InvalidDataException("Street cannot be null or blank.");
+            throw new InvalidDataException("Validation Error: Street is required and cannot be null or blank.");
         if (neighborhood == null || neighborhood.isBlank())
-            throw new InvalidDataException("Neighborhood cannot be null or blank.");
+            throw new InvalidDataException("Validation Error: Neighborhood is required and cannot be null or blank.");
         if (city == null || city.isBlank())
-            throw new InvalidDataException("City cannot be null or blank.");
+            throw new InvalidDataException("Validation Error: City is required and cannot be null or blank.");
         if (state == null || state.isBlank())
-            throw new InvalidDataException("State cannot be null or blank.");
+            throw new InvalidDataException("Validation Error: State is required and cannot be null or blank.");
     }
 }

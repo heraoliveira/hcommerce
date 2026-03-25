@@ -18,9 +18,18 @@ public class HttpConsumer {
         try {
             HttpResponse<String> response = client
                     .send(request, HttpResponse.BodyHandlers.ofString());
+            if  (response.statusCode() >= 300) {
+                throw new ExternalServiceException("Integration Error: Server responded with HTTP status code "
+                        + response.statusCode());
+            }
             return response.body();
-        } catch (IOException | InterruptedException e) {
-            throw new ExternalServiceException("Integration failure.", e);
+        } catch (IOException e) {
+            throw new ExternalServiceException("Integration Error: Failed to communicate with the external API " +
+                    "via network.", e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new ExternalServiceException("Integration Error: The HTTP request was unexpectedly interrupted " +
+                    "before completion.", e);
         }
     }
 }

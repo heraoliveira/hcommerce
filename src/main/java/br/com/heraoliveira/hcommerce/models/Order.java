@@ -33,13 +33,15 @@ public class Order {
     }
 
     private static void validateCustomer (Customer customer) {
-        if (customer == null) throw new InvalidDataException("Customer cannot be null.");
+        if (customer == null) throw new InvalidDataException("Validation Error: A valid customer is required " +
+                "to create an order.");
     }
 
     private static void validateItems(List<CartItem> items) {
-        if (items == null || items.isEmpty()) throw new InvalidCartException("Order must have at least one item.");
+        if (items == null || items.isEmpty()) throw new InvalidCartException("Business Error: Cannot create an " +
+                "order with an empty item list.");
         if (items.stream().anyMatch(i -> i == null || i.getProduct() == null))
-            throw new InvalidCartException("Order items must contain valid products.");
+            throw new InvalidCartException("Validation Error: All order items must contain valid products.");
     }
 
     private BigDecimal calculateTotal() {

@@ -24,17 +24,18 @@ public class Product {
     }
 
     private static void validateName(String name) {
-        if (name == null || name.isBlank()) throw new InvalidDataException("Name cannot be null or blank.");
+        if (name == null || name.isBlank())
+            throw new InvalidDataException("Validation Error: Name is required and cannot be null or blank.");
     }
 
     private static void validateDescription(String description) {
         if (description == null || description.isBlank())
-            throw new InvalidDataException("Description cannot be null or blank.");
+            throw new InvalidDataException("Validation Error: Description is required and cannot be null or blank.");
     }
 
     private static void validatePrice(BigDecimal price) {
         if (price == null || price.compareTo(BigDecimal.ZERO) <= 0)
-            throw new InvalidDataException("Price cannot be null or <= 0.");
+            throw new InvalidDataException("Validation Error: Price must be strictly greater than zero.");
     }
 
     @Override

@@ -12,12 +12,14 @@ public class Cart {
     private final List<CartItem> items = new ArrayList<>();
 
     private static void validateProduct(Product product) {
-        if (product == null) throw new InvalidDataException("Product is null");
+        if (product == null) throw new InvalidDataException("Validation Error: A valid product is required for " +
+                "cart operations.");
     }
 
     public void addItem(Product product, int quantity) {
         validateProduct(product);
-        if (quantity <= 0) throw new InvalidDataException("Quantity cannot be <= 0.");
+        if (quantity <= 0) throw new InvalidDataException("Business Error: Quantity to add must be strictly " +
+                "greater than zero.");
 
         var optionalCartItem = items.stream().filter(item -> item.getProduct().equals(product)).findFirst();
 
@@ -35,7 +37,7 @@ public class Cart {
 
     public boolean updateQuantity(Product product, int quantity) {
         validateProduct(product);
-        if (quantity < 0) throw new InvalidDataException("Quantity cannot be < 0.");
+        if (quantity < 0) throw new InvalidDataException("Business Error: Quantity to update cannot be negative.");
 
         var optionalCartItem = items.stream().filter(item -> item.getProduct().equals(product)).findFirst();
 
@@ -57,8 +59,10 @@ public class Cart {
     }
 
     public BigDecimal applyDiscount(BigDecimal discount) {
-        if (discount == null || discount.compareTo(BigDecimal.ZERO) <= 0 || discount.compareTo(BigDecimal.valueOf(100)) > 0)
-            throw new InvalidDataException("Discount is invalid.");
+        if (discount == null) throw new InvalidDataException("Validation Error: Discount value cannot be null.");
+
+        if (discount.compareTo(BigDecimal.ZERO) <= 0 || discount.compareTo(BigDecimal.valueOf(100)) > 0)
+            throw new InvalidDataException("Business Error: Discount must be between 1 and 100.");
 
         var oldTotal = calculateTotal();
         var multiplier = discount.divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_EVEN);
