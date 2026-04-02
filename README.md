@@ -1,8 +1,8 @@
 # HCommerce
 
-Projeto em desenvolvimento para praticar fundamentos de **Java** por meio de um mini sistema de compras no console.
+Projeto em desenvolvimento para praticar fundamentos de Java por meio de um mini sistema de compras no console.
 
-A proposta deste repositório é consolidar conceitos importantes de orientação a objetos, modelagem de domínio, coleções, validações e tratamento de exceções antes da evolução para uma versão futura mais robusta.
+A proposta deste repositório é consolidar conceitos importantes de orientação a objetos, modelagem de domínio, coleções, validações, exceções personalizadas e integração com API externa antes de evoluir para uma versão futura mais robusta.
 
 ## Objetivo
 
@@ -13,12 +13,20 @@ Construir um sistema simples de e-commerce em terminal, com foco em:
 - uso de `BigDecimal` para valores monetários
 - composição entre classes do domínio
 - tratamento de exceções personalizadas
-- integração inicial com API externa (ViaCEP)
+- integração com a API ViaCEP
 - preparação para persistência em JSON/arquivo
+
+## Tecnologias e dependências
+
+- Java 17
+- Maven
+- Jackson Databind
+- API ViaCEP
+- `java.net.http.HttpClient`
 
 ## Estado atual do projeto
 
-Neste momento, o projeto já possui a base principal do domínio, regras centrais do carrinho, geração de pedido, utilitários de validação e o início da integração com ViaCEP.
+Neste momento, o projeto já possui uma base sólida de domínio e cobre bem a modelagem principal do mini e-commerce.
 
 ### Já implementado
 
@@ -53,20 +61,27 @@ Neste momento, o projeto já possui a base principal do domínio, regras centrai
 - `Cart`
   - adição de itens ao carrinho
   - soma de quantidade para produtos repetidos
-  - remoção de itens
-  - atualização de quantidade
-  - cálculo do valor total
-  - aplicação de desconto percentual
+  - remoção de itens por id
+  - atualização de quantidade por id
+  - cálculo de subtotal, desconto e total
+  - aplicação e limpeza de desconto percentual
   - verificação se o carrinho está vazio
   - proteção da lista interna com visualização não modificável
+  - uso de `ProductNotFoundException` quando o item não existe no carrinho
 
 - `Order`
   - identificação automática
-  - cópia defensiva dos itens recebidos do carrinho
-  - cálculo do total no momento da criação
+  - criação a partir do carrinho com validações
+  - snapshot dos itens da compra usando `OrderItem`
+  - armazenamento de subtotal, desconto e total no momento da criação
   - registro de data/hora do pedido
-  - geração de resumo textual do pedido
+  - geração de resumo textual
   - mudança de status por regras do enum
+
+- `OrderItem`
+  - snapshot dos dados essenciais do produto no momento da compra
+  - armazenamento de id, nome, preço e quantidade
+  - cálculo de subtotal próprio
 
 - `OrderStatus`
   - estados `CREATED`, `COMPLETED` e `CANCELED`
@@ -89,12 +104,22 @@ Neste momento, o projeto já possui a base principal do domínio, regras centrai
   - validação de CEP com regex
   - suporte a CEP com ou sem hífen
 
-#### Serviço
+#### Infraestrutura e serviços
+
+- `HttpConsumer`
+  - consumo HTTP com `HttpClient`
+  - tratamento de falhas de rede e interrupção
 
 - `ViaCepService`
   - validação prévia do CEP informado
-  - consumo inicial da API ViaCEP com `HttpClient`
+  - consumo da API ViaCEP
+  - desserialização do JSON para `Address`
+  - tratamento de CEP inexistente
   - tratamento de falhas de integração por exceção customizada
+
+- `CartService`
+  - regra de desconto simples
+  - aplicação automática de 10% para carrinhos acima de R$ 200,00
 
 #### Classe de entrada
 
@@ -104,57 +129,48 @@ Neste momento, o projeto já possui a base principal do domínio, regras centrai
 
 ## O que ainda está em andamento
 
-- concluir a integração da ViaCEP retornando `Address` em vez de JSON bruto
-- tratar explicitamente CEP inexistente na resposta da API
-- ajustar o fluxo de criação de `Customer` no `Main`
 - criar menu interativo com `Scanner`
 - cadastrar e listar produtos pelo fluxo do console
-- cadastrar cliente com busca de endereço por CEP
+- cadastrar cliente com busca de endereço por CEP no fluxo principal
 - finalizar compra de ponta a ponta pelo terminal
 - persistir produtos e pedidos em arquivo/JSON
-- implementar classes reais da camada `repository`
-
-## Observações importantes sobre o estado atual
-
-O projeto já possui uma base sólida de domínio, mas ainda está em fase de construção.
-
-Hoje, a integração com ViaCEP foi iniciada, porém ainda está parcial:
-
-- o serviço faz a chamada HTTP
-- o CEP é validado antes da requisição
-- mas a resposta ainda é retornada como `String`
-- e o tratamento de CEP inexistente ainda não foi concluído
-
-Além disso, o `Main` continua sendo apenas um ambiente de teste manual. O fluxo completo do sistema ainda será reorganizado nas próximas etapas.
+- implementar a camada `repository`
+- organizar melhor o fluxo da aplicação no `Main`
+- adicionar testes automatizados
+- revisar mensagens, nomenclatura e formatação para apresentação final do portfólio
 
 ## Estrutura atual
 
 ```text
 src/
-└── main/
-    ├── java/
-    │   └── br/com/heraoliveira/hcommerce/
-    │       ├── Main.java
-    │       ├── exception/
-    │       │   ├── ExternalServiceException.java
-    │       │   ├── InvalidCartException.java
-    │       │   ├── InvalidCepException.java
-    │       │   ├── InvalidDataException.java
-    │       │   └── ProductNotFoundException.java
-    │       ├── models/
-    │       │   ├── Address.java
-    │       │   ├── Cart.java
-    │       │   ├── CartItem.java
-    │       │   ├── Customer.java
-    │       │   ├── Order.java
-    │       │   ├── OrderStatus.java
-    │       │   └── Product.java
-    │       ├── repository/
-    │       ├── service/
-    │       │   └── ViaCepService.java
-    │       └── util/
-    │           ├── EmailValidation.java
-    │           └── ZipValidation.java
-    ├── resources/
-    └── test/
-        └── java/
+├── main/
+│   ├── java/
+│   │   └── br/com/heraoliveira/hcommerce/
+│   │       ├── Main.java
+│   │       ├── exception/
+│   │       │   ├── ExternalServiceException.java
+│   │       │   ├── InvalidCartException.java
+│   │       │   ├── InvalidCepException.java
+│   │       │   ├── InvalidDataException.java
+│   │       │   └── ProductNotFoundException.java
+│   │       ├── infra/
+│   │       │   └── HttpConsumer.java
+│   │       ├── models/
+│   │       │   ├── Address.java
+│   │       │   ├── Cart.java
+│   │       │   ├── CartItem.java
+│   │       │   ├── Customer.java
+│   │       │   ├── Order.java
+│   │       │   ├── OrderItem.java
+│   │       │   ├── OrderStatus.java
+│   │       │   └── Product.java
+│   │       ├── service/
+│   │       │   ├── CartService.java
+│   │       │   └── ViaCepService.java
+│   │       └── util/
+│   │           ├── EmailValidation.java
+│   │           └── ZipValidation.java
+│   └── resources/
+└── test/
+    └── java/
+```

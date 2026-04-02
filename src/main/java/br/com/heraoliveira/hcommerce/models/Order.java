@@ -6,7 +6,9 @@ import br.com.heraoliveira.hcommerce.exception.InvalidDataException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class Order {
@@ -16,19 +18,27 @@ public class Order {
     private final long id;
     private final LocalDateTime orderDate;
     private final Customer customer;
-    private final List<CartItem> items;
+    private final List<OrderItem> items;
+    private final BigDecimal subtotal;
+    private final BigDecimal discountAmount;
     private final BigDecimal total;
     private OrderStatus orderStatus;
 
-    public Order(Customer customer, List<CartItem> items) {
+    public Order(Customer customer, List<OrderItem> items, BigDecimal subtotal, BigDecimal discountAmount
+            , BigDecimal total) {
         validateCustomer(customer);
         validateItems(items);
+        validateSubtotal(subtotal);
+        validateDiscountAmount(discountAmount);
+        validateTotal(total);
 
         this.id = nextId++;
         this.customer = customer;
-        this.items = items.stream().map(i -> new CartItem(i.getProduct(), i.getQuantity())).toList();
+        this.items = List.copyOf(items);
         this.orderDate = LocalDateTime.now();
-        this.total = calculateTotal();
+        this.subtotal = subtotal;
+        this.discountAmount = discountAmount;
+        this.total = total;
         this.orderStatus = OrderStatus.CREATED;
     }
 
@@ -37,16 +47,65 @@ public class Order {
                 "to create an order.");
     }
 
-    private static void validateItems(List<CartItem> items) {
-        if (items == null || items.isEmpty()) throw new InvalidCartException("Business Error: Cannot create an " +
+    private static void validateItems(List<OrderItem> items) {
+        if (items == null || items.isEmpty()) throw new InvalidDataException("Business Error: Cannot create an " +
                 "order with an empty item list.");
-        if (items.stream().anyMatch(i -> i == null || i.getProduct() == null))
-            throw new InvalidCartException("Validation Error: All order items must contain valid products.");
+        if (items.stream().anyMatch(Objects::isNull))
+            throw new InvalidDataException("Validation Error: All order items must be valid and cannot be null.");
     }
 
-    private BigDecimal calculateTotal() {
-        return items.stream().map(i-> i.calculateSubtotal())
-                .reduce(BigDecimal.ZERO, (a, b) -> a.add(b));
+    private static void validateTotal(BigDecimal total) {
+        if (total == null) {
+            throw new InvalidDataException("Validation Error: Order total cannot be null.");
+        }
+
+        if (total.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new InvalidDataException("Business Error: Order total must be strictly " +
+                    "greater than zero.");
+        }
+    }
+
+    private static void validateSubtotal(BigDecimal subtotal) {
+        if (subtotal == null) {
+            throw new InvalidDataException("Validation Error: Order subtotal cannot be null.");
+        }
+
+        if (subtotal.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new InvalidDataException("Business Error: Order subtotal must be strictly " +
+                    "greater than zero.");
+        }
+    }
+
+    private static void validateDiscountAmount(BigDecimal discountAmount) {
+        if (discountAmount == null) {
+            throw new InvalidDataException("Validation Error: Order discount amount cannot be null.");
+        }
+
+        if (discountAmount.compareTo(BigDecimal.ZERO) < 0) {
+            throw new InvalidDataException("Business Error: Order discount amount cannot be negative.");
+        }
+    }
+
+    private static OrderItem toOrderItem(CartItem cartItem) {
+        if  (cartItem == null)
+            throw new InvalidDataException("Validation Error: A valid Cart Item is required for order operations.");
+        Product product = cartItem.getProduct();
+        return new OrderItem(product.getId(), product.getName(), product.getPrice(), cartItem.getQuantity());
+    }
+
+    public static Order fromCart(Customer customer, Cart cart) {
+        validateCustomer(customer);
+        if (cart == null) throw new InvalidCartException("Validation Error: Cart cannot be null.");
+        if (cart.isEmpty()) throw new InvalidCartException("Business Error: Cart cannot be empty.");
+
+        List<OrderItem> orderItems = new ArrayList<>();
+
+        for (CartItem cartItem : cart.getItems()) {
+            orderItems.add(toOrderItem(cartItem));
+        }
+
+        return new Order(customer, orderItems, cart.calculateSubtotal(), cart.calculateDiscountAmount()
+                , cart.calculateTotal());
     }
 
     public void finalizeOrder() {
@@ -58,17 +117,23 @@ public class Order {
     }
 
     public String getSummary() {
-        var products = items.stream().map(i -> String.format("- %d qty. of %s"
-                , i.getQuantity(), i.getProduct().getName())).collect(Collectors.joining("\n"));
+        var products = items.stream()
+                .map(i -> String.format("- %d qty. of %s", i.getQuantity(), i.getProductName()))
+                .collect(Collectors.joining("\n"));
+
         return String.format("""
-                Order ID: %s
-                Customer: %s
-                Status: %s
-                Date: %s
-                Total: R$ %s
-                Order items:
-                %s
-                """, id, customer.getName(), orderStatus, orderDate.format(formatter), total, products);
+            Order ID: %s
+            Customer: %s
+            Status: %s
+            Date: %s
+            Subtotal: R$ %s
+            Discount: R$ %s
+            Total: R$ %s
+            Order items:
+            %s
+            """,
+                id, customer.getName(), orderStatus, orderDate.format(formatter), subtotal, discountAmount, total,
+                products);
     }
 
     public long getId() {
@@ -83,7 +148,7 @@ public class Order {
         return customer;
     }
 
-    public List<CartItem> getItems() {
+    public List<OrderItem> getItems() {
         return items;
     }
 
@@ -93,5 +158,13 @@ public class Order {
 
     public OrderStatus getOrderStatus() {
         return orderStatus;
+    }
+
+    public BigDecimal getSubtotal() {
+        return subtotal;
+    }
+
+    public BigDecimal getDiscountAmount() {
+        return discountAmount;
     }
 }
