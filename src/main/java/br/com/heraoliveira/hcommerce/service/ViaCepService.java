@@ -13,21 +13,18 @@ public class ViaCepService {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public static Address fetchAddress(String zip) {
-        if (zip == null || zip.isEmpty()) throw new InvalidCepException("Validation Error: ZIP cannot be null or " +
-                "empty.");
-        var zipFormated = zip.replaceAll("\\D", "");
+        if (zip == null || zip.isBlank())
+            throw new InvalidCepException("Validation Error: ZIP cannot be null or blank.");
+        var normalizedZip = ZipValidation.normalize(zip.strip());
 
-        if (!ZipValidation.isValid(zipFormated))
-            throw new InvalidCepException("Validation Error: Invalid ZIP code format.");
-
-        var url = "https://viacep.com.br/ws/" + zipFormated + "/json/";
+        var url = "https://viacep.com.br/ws/" + normalizedZip + "/json/";
         var json = HttpConsumer.consumer(url);
 
         try {
             var readTree = objectMapper.readTree(json);
-            if (readTree.has("erro") && readTree.get("erro").asBoolean()) {
+            if (readTree.has("erro") && readTree.get("erro").asBoolean())
                 throw new InvalidCepException("Not Found Error: ZIP code does not exist.");
-            }
+
             return objectMapper.readValue(json, Address.class);
         } catch (JsonProcessingException e) {
             throw new ExternalServiceException("Processing Error: Unable to parse address data.", e);

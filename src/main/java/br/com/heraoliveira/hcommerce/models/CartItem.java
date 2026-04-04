@@ -19,13 +19,13 @@ public class CartItem {
     }
 
     private static void validateProduct(Product product) {
-        if (product == null) throw new InvalidDataException("Validation Error: A valid product is required to " +
-                "create a cart item.");
+        if (product == null)
+            throw new InvalidDataException("Validation Error: A valid product is required to create a cart item.");
     }
 
     private static void validateQuantity(int quantity) {
-        if (quantity <= 0) throw new InvalidCartException("Business Error: Quantity must be strictly " +
-                "greater than zero.");
+        if (quantity <= 0)
+            throw new InvalidCartException("Business Error: Quantity must be strictly greater than zero.");
     }
 
     public BigDecimal calculateSubtotal() {

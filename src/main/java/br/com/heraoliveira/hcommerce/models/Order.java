@@ -12,7 +12,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class Order {
-    private static long nextId = 1;
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     private final long id;
@@ -24,15 +23,16 @@ public class Order {
     private final BigDecimal total;
     private OrderStatus orderStatus;
 
-    public Order(Customer customer, List<OrderItem> items, BigDecimal subtotal, BigDecimal discountAmount
+    public Order(long id, Customer customer, List<OrderItem> items, BigDecimal subtotal, BigDecimal discountAmount
             , BigDecimal total) {
+        validateId(id);
         validateCustomer(customer);
         validateItems(items);
         validateSubtotal(subtotal);
         validateDiscountAmount(discountAmount);
         validateTotal(total);
 
-        this.id = nextId++;
+        this.id = id;
         this.customer = customer;
         this.items = List.copyOf(items);
         this.orderDate = LocalDateTime.now();
@@ -42,14 +42,19 @@ public class Order {
         this.orderStatus = OrderStatus.CREATED;
     }
 
+    private static void validateId(long id) {
+        if (id <= 0)
+            throw new InvalidDataException("Validation Error: Order ID must be strictly greater than zero.");
+    }
+
     private static void validateCustomer (Customer customer) {
-        if (customer == null) throw new InvalidDataException("Validation Error: A valid customer is required " +
-                "to create an order.");
+        if (customer == null)
+            throw new InvalidDataException("Validation Error: A valid customer is required to create an order.");
     }
 
     private static void validateItems(List<OrderItem> items) {
-        if (items == null || items.isEmpty()) throw new InvalidDataException("Business Error: Cannot create an " +
-                "order with an empty item list.");
+        if (items == null || items.isEmpty())
+            throw new InvalidDataException("Business Error: Cannot create an order with an empty item list.");
         if (items.stream().anyMatch(Objects::isNull))
             throw new InvalidDataException("Validation Error: All order items must be valid and cannot be null.");
     }
@@ -66,24 +71,20 @@ public class Order {
     }
 
     private static void validateSubtotal(BigDecimal subtotal) {
-        if (subtotal == null) {
+        if (subtotal == null)
             throw new InvalidDataException("Validation Error: Order subtotal cannot be null.");
-        }
 
-        if (subtotal.compareTo(BigDecimal.ZERO) <= 0) {
+        if (subtotal.compareTo(BigDecimal.ZERO) <= 0)
             throw new InvalidDataException("Business Error: Order subtotal must be strictly " +
                     "greater than zero.");
-        }
     }
 
     private static void validateDiscountAmount(BigDecimal discountAmount) {
-        if (discountAmount == null) {
+        if (discountAmount == null)
             throw new InvalidDataException("Validation Error: Order discount amount cannot be null.");
-        }
 
-        if (discountAmount.compareTo(BigDecimal.ZERO) < 0) {
+        if (discountAmount.compareTo(BigDecimal.ZERO) < 0)
             throw new InvalidDataException("Business Error: Order discount amount cannot be negative.");
-        }
     }
 
     private static OrderItem toOrderItem(CartItem cartItem) {
@@ -93,7 +94,7 @@ public class Order {
         return new OrderItem(product.getId(), product.getName(), product.getPrice(), cartItem.getQuantity());
     }
 
-    public static Order fromCart(Customer customer, Cart cart) {
+    public static Order fromCart(long orderId, Customer customer, Cart cart) {
         validateCustomer(customer);
         if (cart == null) throw new InvalidCartException("Validation Error: Cart cannot be null.");
         if (cart.isEmpty()) throw new InvalidCartException("Business Error: Cart cannot be empty.");
@@ -104,7 +105,7 @@ public class Order {
             orderItems.add(toOrderItem(cartItem));
         }
 
-        return new Order(customer, orderItems, cart.calculateSubtotal(), cart.calculateDiscountAmount()
+        return new Order(orderId, customer, orderItems, cart.calculateSubtotal(), cart.calculateDiscountAmount()
                 , cart.calculateTotal());
     }
 

@@ -14,8 +14,8 @@ public class Cart {
     private BigDecimal discountPercentage =  BigDecimal.ZERO;
 
     private static void validateProduct(Product product) {
-        if (product == null) throw new InvalidDataException("Validation Error: A valid product is required for " +
-                "cart operations.");
+        if (product == null)
+            throw new InvalidDataException("Validation Error: A valid product is required for cart operations.");
     }
 
     private CartItem findItemByProductId(long productId) {
@@ -29,8 +29,8 @@ public class Cart {
 
     public void addItem(Product product, int quantity) {
         validateProduct(product);
-        if (quantity <= 0) throw new InvalidDataException("Business Error: Quantity to add must be strictly " +
-                "greater than zero.");
+        if (quantity <= 0)
+            throw new InvalidDataException("Business Error: Quantity to add must be strictly greater than zero.");
 
         var optionalCartItem = items.stream().filter(item -> item.getProduct().equals(product)).findFirst();
 

@@ -18,10 +18,9 @@ public class HttpConsumer {
         try {
             HttpResponse<String> response = client
                     .send(request, HttpResponse.BodyHandlers.ofString());
-            if  (response.statusCode() >= 300) {
+            if  (response.statusCode() >= 300)
                 throw new ExternalServiceException("Integration Error: Server responded with HTTP status code "
                         + response.statusCode());
-            }
             return response.body();
         } catch (IOException e) {
             throw new ExternalServiceException("Integration Error: Failed to communicate with the external API " +

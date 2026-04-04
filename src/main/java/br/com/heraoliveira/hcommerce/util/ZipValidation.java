@@ -1,12 +1,26 @@
 package br.com.heraoliveira.hcommerce.util;
 
-public class ZipValidation {
-    private static final String ZIP_REGEX = "^\\d{5}-?\\d{3}$";
+import br.com.heraoliveira.hcommerce.exception.InvalidCepException;
+
+public final class ZipValidation {
+    private static final String INPUT_REGEX = "^(\\d{8}|\\d{5}-\\d{3})$";
+    private static final String NORMALIZED_REGEX = "^\\d{8}$";
 
     private ZipValidation() {
     }
 
-    public static boolean isValid(String zip) {
-        return zip != null && !zip.isBlank() && zip.matches(ZIP_REGEX);
+    public static boolean isValidInput(String zip) {
+        return zip != null && !zip.isBlank() && zip.strip().matches(INPUT_REGEX);
+    }
+
+    public static String normalize(String zip) {
+        if (!isValidInput(zip)) {
+            throw new InvalidCepException("Validation Error: Invalid ZIP code format. Use XXXXXXXX or XXXXX-XXX.");
+        }
+        return zip.strip().replace("-", "");
+    }
+
+    public static boolean isNormalized(String zip) {
+        return zip != null && !zip.isBlank() && zip.strip().matches(NORMALIZED_REGEX);
     }
 }

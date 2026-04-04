@@ -1,6 +1,5 @@
 package br.com.heraoliveira.hcommerce.models;
 
-import br.com.heraoliveira.hcommerce.exception.InvalidCepException;
 import br.com.heraoliveira.hcommerce.exception.InvalidDataException;
 import br.com.heraoliveira.hcommerce.util.ZipValidation;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -13,18 +12,26 @@ public record Address(
         @JsonProperty("bairro") String neighborhood,
         @JsonProperty("localidade") String city,
         @JsonProperty("uf") String state
-) {
+){
 
     public Address {
-        if (!ZipValidation.isValid(zip))
-            throw new InvalidCepException("Validation Error: Invalid ZIP code format.");
-        if (street == null || street.isBlank())
-            throw new InvalidDataException("Validation Error: Street is required and cannot be null or blank.");
-        if (neighborhood == null || neighborhood.isBlank())
-            throw new InvalidDataException("Validation Error: Neighborhood is required and cannot be null or blank.");
-        if (city == null || city.isBlank())
-            throw new InvalidDataException("Validation Error: City is required and cannot be null or blank.");
-        if (state == null || state.isBlank())
-            throw new InvalidDataException("Validation Error: State is required and cannot be null or blank.");
+        zip = ZipValidation.normalize(zip);
+        street = normalizeOptionalField(street);
+        neighborhood = normalizeOptionalField(neighborhood);
+        city = validateRequiredField(city, "City");
+        state = validateRequiredField(state, "State");
+    }
+
+    private static String validateRequiredField(String value, String fieldName) {
+        if (value == null || value.isBlank()) {
+            throw new InvalidDataException(
+                    "Validation Error: " + fieldName + " is required and cannot be null or blank."
+            );
+        }
+        return value.strip();
+    }
+
+    private static String normalizeOptionalField(String value) {
+        return value == null ? "" : value.strip();
     }
 }

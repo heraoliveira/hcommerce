@@ -1,6 +1,8 @@
 package br.com.heraoliveira.hcommerce;
 
 import br.com.heraoliveira.hcommerce.models.*;
+import br.com.heraoliveira.hcommerce.repository.OrderRepository;
+import br.com.heraoliveira.hcommerce.repository.ProductRepository;
 import br.com.heraoliveira.hcommerce.service.CartService;
 import br.com.heraoliveira.hcommerce.service.ViaCepService;
 
@@ -12,13 +14,24 @@ public class Main {
         try {
             // Instantiating
 
-            Address address1 = ViaCepService.fetchAddress("49.01A0-04D0");
+            ProductRepository productRepository = new ProductRepository();
+            OrderRepository orderRepository = new OrderRepository();
+
+            Address address1 = ViaCepService.fetchAddress("49010040");
 
             Customer customer1 = new Customer("Customer 1", "customer@customer.com", address1);
 
-            Product product1 = new Product("Product 1", "Description 1", BigDecimal.valueOf(10));
-            Product product2 = new Product("Product 2", "Description 2", BigDecimal.valueOf(20));
-            Product product3 = new Product("Product 3", "Description 3", BigDecimal.valueOf(30));
+            Product product1 = new Product(productRepository.nextId(), "Product 1"
+                    , "Description 1", BigDecimal.valueOf(10));
+            productRepository.save(product1);
+
+            Product product2 = new Product(productRepository.nextId(), "Product 2"
+                    , "Description 2", BigDecimal.valueOf(20));
+            productRepository.save(product2);
+
+            Product product3 = new Product(productRepository.nextId(), "Product 3"
+                    , "Description 3", BigDecimal.valueOf(30));
+            productRepository.save(product3);
 
             Cart cart = new Cart();
 
@@ -49,7 +62,8 @@ public class Main {
             CartService cartService = new CartService();
             cartService.recalculateDiscount(cart);
 
-            Order order = Order.fromCart(customer1, cart);
+            Order order = Order.fromCart(orderRepository.nextId(), customer1, cart);
+            orderRepository.save(order);
 
             product1.setPrice(BigDecimal.valueOf(500));
             cart.updateQuantity(product1.getId(), 175);

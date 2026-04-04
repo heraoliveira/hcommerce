@@ -5,22 +5,27 @@ import br.com.heraoliveira.hcommerce.exception.InvalidDataException;
 import java.math.BigDecimal;
 
 public class Product {
-    private static long nextId = 1;
-
     private final long id;
     private final String name;
     private final String description;
     private BigDecimal price;
 
-    public Product(String name, String description, BigDecimal price) {
+    public Product(long id , String name, String description, BigDecimal price) {
+        validateId(id);
         validateName(name);
         validateDescription(description);
         validatePrice(price);
 
-        this.id = nextId++;
+        this.id = id;
         this.name = name.strip();
         this.description = description.strip();
         this.price = price;
+    }
+
+    private static void validateId(long id) {
+        if (id <= 0)
+            throw new InvalidDataException("Validation Error: Product ID must be strictly greater than zero.");
+
     }
 
     private static void validateName(String name) {
