@@ -25,7 +25,7 @@ public record Address(
     private static String validateRequiredField(String value, String fieldName) {
         if (value == null || value.isBlank()) {
             throw new InvalidDataException(
-                    "Validation Error: " + fieldName + " is required and cannot be null or blank."
+                    fieldName + " is required and cannot be null or blank."
             );
         }
         return value.strip();

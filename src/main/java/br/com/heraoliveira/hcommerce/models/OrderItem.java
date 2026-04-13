@@ -1,6 +1,8 @@
 package br.com.heraoliveira.hcommerce.models;
 
 import br.com.heraoliveira.hcommerce.exception.InvalidDataException;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.math.BigDecimal;
 
@@ -10,7 +12,13 @@ public class OrderItem {
     private final BigDecimal productPrice;
     private final int quantity;
 
-    public OrderItem(long productId, String productName, BigDecimal productPrice, int quantity) {
+    @JsonCreator
+    public OrderItem(
+            @JsonProperty("productId") long productId,
+            @JsonProperty("productName") String productName,
+            @JsonProperty("productPrice") BigDecimal productPrice,
+            @JsonProperty("quantity") int quantity) {
+        validateProductId(productId);
         validateProductName(productName);
         validateProductPrice(productPrice);
         validateQuantity(quantity);
@@ -21,18 +29,23 @@ public class OrderItem {
         this.quantity = quantity;
     }
 
+    private static void validateProductId(long productId) {
+        if (productId <= 0)
+            throw new InvalidDataException("Product ID must be greater than zero.");
+    }
+
     private static void validateProductName(String productName) {
         if (productName == null || productName.isBlank())
-            throw new InvalidDataException("Validation Error: Name is required and cannot be null or blank.");
+            throw new InvalidDataException("Name is required and cannot be null or blank.");
     }
 
     private static void validateProductPrice(BigDecimal productPrice) {
         if (productPrice == null || productPrice.compareTo(BigDecimal.ZERO) <= 0)
-            throw new InvalidDataException("Validation Error: Price must be strictly greater than zero.");
+            throw new InvalidDataException("Price must be greater than zero.");
     }
 
     private static void validateQuantity(int quantity) {
-        if (quantity <= 0) throw new InvalidDataException("Business Error: Quantity must be strictly " +
+        if (quantity <= 0) throw new InvalidDataException("Quantity must be " +
                 "greater than zero.");
     }
 

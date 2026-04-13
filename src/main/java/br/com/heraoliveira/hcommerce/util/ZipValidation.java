@@ -15,7 +15,7 @@ public final class ZipValidation {
 
     public static String normalize(String zip) {
         if (!isValidInput(zip)) {
-            throw new InvalidCepException("Validation Error: Invalid ZIP code format. Use XXXXXXXX or XXXXX-XXX.");
+            throw new InvalidCepException("Invalid ZIP code format. Use XXXXXXXX or XXXXX-XXX.");
         }
         return zip.strip().replace("-", "");
     }
