@@ -1,6 +1,7 @@
 # HCommerce
 
-## English
+<details>
+<summary><strong>English</strong></summary>
 
 A small console-based e-commerce application written in Java.
 
@@ -297,11 +298,12 @@ Optional debug mode:
 
 When debug mode is enabled, unexpected top-level errors print stack traces in addition to the normal console message.
 
+</details>
+
 ---
 
-# HCommerce
-
-## Português
+<details>
+<summary><strong>Português</strong></summary>
 
 Uma pequena aplicação de e-commerce em console escrita em Java.
 
@@ -599,3 +601,5 @@ Modo de debug opcional:
 Quando o modo debug está habilitado, erros inesperados no topo imprimem stack trace além da mensagem normal no console.
 
 ---
+
+</details>
