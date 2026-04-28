@@ -1,4 +1,4 @@
-package br.com.heraoliveira.hcommerce.models;
+package br.com.heraoliveira.hcommerce.model;
 
 import br.com.heraoliveira.hcommerce.exception.InvalidDataException;
 import br.com.heraoliveira.hcommerce.util.EmailValidation;

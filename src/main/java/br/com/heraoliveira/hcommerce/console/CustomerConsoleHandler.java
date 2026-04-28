@@ -1,6 +1,6 @@
 package br.com.heraoliveira.hcommerce.console;
 
-import br.com.heraoliveira.hcommerce.models.Customer;
+import br.com.heraoliveira.hcommerce.model.Customer;
 import br.com.heraoliveira.hcommerce.service.CustomerService;
 
 import java.util.Scanner;

@@ -1,7 +1,7 @@
 package br.com.heraoliveira.hcommerce.repository;
 
 import br.com.heraoliveira.hcommerce.exception.InvalidDataException;
-import br.com.heraoliveira.hcommerce.models.Order;
+import br.com.heraoliveira.hcommerce.model.Order;
 import br.com.heraoliveira.hcommerce.util.PersistencePaths;
 import com.fasterxml.jackson.core.type.TypeReference;
 

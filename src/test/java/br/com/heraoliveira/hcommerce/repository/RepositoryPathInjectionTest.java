@@ -1,12 +1,12 @@
 package br.com.heraoliveira.hcommerce.repository;
 
 import br.com.heraoliveira.hcommerce.exception.ProductNotFoundException;
-import br.com.heraoliveira.hcommerce.models.Address;
-import br.com.heraoliveira.hcommerce.models.Cart;
-import br.com.heraoliveira.hcommerce.models.Customer;
-import br.com.heraoliveira.hcommerce.models.Order;
-import br.com.heraoliveira.hcommerce.models.OrderStatus;
-import br.com.heraoliveira.hcommerce.models.Product;
+import br.com.heraoliveira.hcommerce.model.Address;
+import br.com.heraoliveira.hcommerce.model.Cart;
+import br.com.heraoliveira.hcommerce.model.Customer;
+import br.com.heraoliveira.hcommerce.model.Order;
+import br.com.heraoliveira.hcommerce.model.OrderStatus;
+import br.com.heraoliveira.hcommerce.model.Product;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 

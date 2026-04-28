@@ -2,7 +2,7 @@ package br.com.heraoliveira.hcommerce.repository;
 
 import br.com.heraoliveira.hcommerce.exception.InvalidDataException;
 import br.com.heraoliveira.hcommerce.exception.ProductNotFoundException;
-import br.com.heraoliveira.hcommerce.models.Product;
+import br.com.heraoliveira.hcommerce.model.Product;
 import br.com.heraoliveira.hcommerce.util.PersistencePaths;
 import com.fasterxml.jackson.core.type.TypeReference;
 

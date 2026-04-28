@@ -1,8 +1,9 @@
 package br.com.heraoliveira.hcommerce.service;
 
-import br.com.heraoliveira.hcommerce.models.Cart;
-import br.com.heraoliveira.hcommerce.models.Customer;
-import br.com.heraoliveira.hcommerce.models.Order;
+import br.com.heraoliveira.hcommerce.exception.InvalidCartException;
+import br.com.heraoliveira.hcommerce.model.Cart;
+import br.com.heraoliveira.hcommerce.model.Customer;
+import br.com.heraoliveira.hcommerce.model.Order;
 import br.com.heraoliveira.hcommerce.repository.OrderRepository;
 
 import java.util.List;

@@ -1,7 +1,7 @@
 package br.com.heraoliveira.hcommerce.console;
 
-import br.com.heraoliveira.hcommerce.models.Cart;
-import br.com.heraoliveira.hcommerce.models.Customer;
+import br.com.heraoliveira.hcommerce.model.Cart;
+import br.com.heraoliveira.hcommerce.model.Customer;
 import br.com.heraoliveira.hcommerce.service.OrderService;
 
 final class OrderConsoleHandler {

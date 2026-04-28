@@ -1,12 +1,12 @@
 package br.com.heraoliveira.hcommerce.console;
 
-import br.com.heraoliveira.hcommerce.models.Cart;
-import br.com.heraoliveira.hcommerce.models.CartPricing;
-import br.com.heraoliveira.hcommerce.models.CartItem;
-import br.com.heraoliveira.hcommerce.models.Customer;
-import br.com.heraoliveira.hcommerce.models.Order;
-import br.com.heraoliveira.hcommerce.models.OrderItem;
-import br.com.heraoliveira.hcommerce.models.Product;
+import br.com.heraoliveira.hcommerce.model.Cart;
+import br.com.heraoliveira.hcommerce.model.CartPricing;
+import br.com.heraoliveira.hcommerce.model.CartItem;
+import br.com.heraoliveira.hcommerce.model.Customer;
+import br.com.heraoliveira.hcommerce.model.Order;
+import br.com.heraoliveira.hcommerce.model.OrderItem;
+import br.com.heraoliveira.hcommerce.model.Product;
 import br.com.heraoliveira.hcommerce.util.MoneyFormatter;
 
 import java.time.format.DateTimeFormatter;

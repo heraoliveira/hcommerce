@@ -1,4 +1,4 @@
-package br.com.heraoliveira.hcommerce.models;
+package br.com.heraoliveira.hcommerce.model;
 
 import br.com.heraoliveira.hcommerce.exception.InvalidDataException;
 import com.fasterxml.jackson.annotation.JsonCreator;

@@ -2,7 +2,7 @@ package br.com.heraoliveira.hcommerce.console;
 
 import br.com.heraoliveira.hcommerce.exception.InvalidDataException;
 import br.com.heraoliveira.hcommerce.exception.ProductNotFoundException;
-import br.com.heraoliveira.hcommerce.models.Cart;
+import br.com.heraoliveira.hcommerce.model.Cart;
 
 import java.util.Scanner;
 

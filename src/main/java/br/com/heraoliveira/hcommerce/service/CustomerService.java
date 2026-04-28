@@ -1,7 +1,7 @@
 package br.com.heraoliveira.hcommerce.service;
 
-import br.com.heraoliveira.hcommerce.models.Address;
-import br.com.heraoliveira.hcommerce.models.Customer;
+import br.com.heraoliveira.hcommerce.model.Address;
+import br.com.heraoliveira.hcommerce.model.Customer;
 import br.com.heraoliveira.hcommerce.repository.CurrentCustomerRepository;
 
 import java.util.Objects;

@@ -1,4 +1,4 @@
-package br.com.heraoliveira.hcommerce.models;
+package br.com.heraoliveira.hcommerce.model;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

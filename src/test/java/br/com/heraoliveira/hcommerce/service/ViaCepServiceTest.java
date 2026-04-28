@@ -4,7 +4,7 @@ import br.com.heraoliveira.hcommerce.exception.ExternalServiceException;
 import br.com.heraoliveira.hcommerce.exception.InvalidCepException;
 import br.com.heraoliveira.hcommerce.exception.InvalidDataException;
 import br.com.heraoliveira.hcommerce.infra.HttpFetcher;
-import br.com.heraoliveira.hcommerce.models.Address;
+import br.com.heraoliveira.hcommerce.model.Address;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicReference;

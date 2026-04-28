@@ -1,6 +1,5 @@
-package br.com.heraoliveira.hcommerce.models;
+package br.com.heraoliveira.hcommerce.model;
 
-import br.com.heraoliveira.hcommerce.exception.InvalidCartException;
 import br.com.heraoliveira.hcommerce.exception.InvalidDataException;
 
 import java.math.BigDecimal;
@@ -25,7 +24,7 @@ public class CartItem {
 
     private static void validateQuantity(int quantity) {
         if (quantity <= 0)
-            throw new InvalidCartException("Quantity must be greater than zero.");
+            throw new InvalidDataException("Quantity must be greater than zero.");
     }
 
     public BigDecimal calculateSubtotal() {

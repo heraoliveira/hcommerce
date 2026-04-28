@@ -1,6 +1,6 @@
 package br.com.heraoliveira.hcommerce.service;
 
-import br.com.heraoliveira.hcommerce.models.Address;
+import br.com.heraoliveira.hcommerce.model.Address;
 
 public interface AddressLookupService {
 

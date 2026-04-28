@@ -3,7 +3,7 @@ package br.com.heraoliveira.hcommerce.service;
 import br.com.heraoliveira.hcommerce.exception.ExternalServiceException;
 import br.com.heraoliveira.hcommerce.exception.InvalidCepException;
 import br.com.heraoliveira.hcommerce.infra.HttpFetcher;
-import br.com.heraoliveira.hcommerce.models.Address;
+import br.com.heraoliveira.hcommerce.model.Address;
 import br.com.heraoliveira.hcommerce.util.JsonUtil;
 import br.com.heraoliveira.hcommerce.util.ZipValidation;
 import com.fasterxml.jackson.core.JsonProcessingException;

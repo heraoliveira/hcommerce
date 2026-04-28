@@ -1,7 +1,7 @@
 package br.com.heraoliveira.hcommerce.repository;
 
 import br.com.heraoliveira.hcommerce.exception.InvalidDataException;
-import br.com.heraoliveira.hcommerce.models.Customer;
+import br.com.heraoliveira.hcommerce.model.Customer;
 import br.com.heraoliveira.hcommerce.util.JsonUtil;
 import br.com.heraoliveira.hcommerce.util.PersistencePaths;
 
