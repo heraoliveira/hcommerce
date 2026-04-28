@@ -3,11 +3,17 @@ package br.com.heraoliveira.hcommerce.console;
 import br.com.heraoliveira.hcommerce.exception.InvalidDataException;
 import br.com.heraoliveira.hcommerce.exception.ProductNotFoundException;
 import br.com.heraoliveira.hcommerce.model.Cart;
+import br.com.heraoliveira.hcommerce.service.CartService;
 
 import java.util.Scanner;
 
 final class CartConsoleHandler {
     private static final long CANCEL_OPTION = 0L;
+    private final CartService cartService;
+
+    CartConsoleHandler(CartService cartService) {
+        this.cartService = cartService;
+    }
 
     void updateCartItemQuantity(Scanner scanner, Cart cart) {
         System.out.println("\n=== Update Product Quantity ===");
@@ -27,8 +33,14 @@ final class CartConsoleHandler {
             }
 
             try {
+                if (!cart.containsProduct(productId)) {
+                    throw new ProductNotFoundException(
+                            "Product with ID " + productId + " was not found in the cart."
+                    );
+                }
+
                 int quantity = ConsoleInput.readPositiveInt(scanner, "New quantity: ");
-                cart.updateQuantity(productId, quantity);
+                cartService.updateProductQuantity(cart, productId, quantity);
 
                 System.out.println("\nQuantity updated successfully.");
                 return;
@@ -58,7 +70,7 @@ final class CartConsoleHandler {
             }
 
             try {
-                cart.removeItem(productId);
+                cartService.removeProductFromCart(cart, productId);
 
                 System.out.println("\nProduct removed successfully.");
                 return;

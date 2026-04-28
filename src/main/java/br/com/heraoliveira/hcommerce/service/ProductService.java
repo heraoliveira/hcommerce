@@ -42,7 +42,9 @@ public class ProductService {
     }
 
     public void removeProduct(long productId, Cart activeCart) {
-        Objects.requireNonNull(activeCart, "Active cart cannot be null.");
+        if (activeCart == null) {
+            throw new InvalidCartException("Active cart cannot be null.");
+        }
 
         productRepository.findById(productId);
 
@@ -53,11 +55,6 @@ public class ProductService {
         }
 
         productRepository.removeById(productId);
-    }
-
-    public void addProductToCart(Cart cart, long productId, int quantity) {
-        Product product = productRepository.findById(productId);
-        cart.addItem(product, quantity);
     }
 
     private static boolean isProductInActiveCart(Cart activeCart, long productId) {

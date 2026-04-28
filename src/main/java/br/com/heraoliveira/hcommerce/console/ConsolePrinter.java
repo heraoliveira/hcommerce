@@ -30,15 +30,15 @@ public final class ConsolePrinter {
         System.out.println("Units in cart: " + cartItemCount);
         System.out.println("1 - Register customer");
         System.out.println("2 - Register product");
-        System.out.println("3 - List products");
-        System.out.println("4 - Add product to cart");
-        System.out.println("5 - Update product quantity");
-        System.out.println("6 - Remove product from cart");
-        System.out.println("7 - View cart");
-        System.out.println("8 - List saved orders");
-        System.out.println("9 - Finalize order");
-        System.out.println("10 - Search products");
-        System.out.println("11 - Remove product from catalog");
+        System.out.println("3 - Remove product from catalog");
+        System.out.println("4 - Search products");
+        System.out.println("5 - List products");
+        System.out.println("6 - Add product to cart");
+        System.out.println("7 - Update cart product quantity");
+        System.out.println("8 - Remove product from cart");
+        System.out.println("9 - View cart");
+        System.out.println("10 - Finalize order");
+        System.out.println("11 - List saved orders");
         System.out.println("0 - Exit");
         System.out.print("Choose an option: ");
     }

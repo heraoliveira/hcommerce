@@ -58,6 +58,17 @@ class ProductServiceTest {
         assertEquals("Notebook", productRepository.findById(product.getId()).getName());
     }
 
+    @Test
+    void shouldRejectRemovingAProductWhenActiveCartIsMissing() {
+        ProductRepository productRepository = new ProductRepository(tempDirectory);
+        ProductService productService = new ProductService(productRepository);
+        Product product = product(1L, "Notebook", "Portable computer", "2500.00");
+
+        productRepository.save(product);
+
+        assertThrows(InvalidCartException.class, () -> productService.removeProduct(product.getId(), null));
+    }
+
     private static Product product(long id, String name, String description, String price) {
         return new Product(id, name, description, new BigDecimal(price));
     }

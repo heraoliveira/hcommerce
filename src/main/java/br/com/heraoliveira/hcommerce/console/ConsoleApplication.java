@@ -13,6 +13,7 @@ import br.com.heraoliveira.hcommerce.repository.CurrentCustomerRepository;
 import br.com.heraoliveira.hcommerce.repository.OrderRepository;
 import br.com.heraoliveira.hcommerce.repository.ProductRepository;
 import br.com.heraoliveira.hcommerce.service.AddressLookupService;
+import br.com.heraoliveira.hcommerce.service.CartService;
 import br.com.heraoliveira.hcommerce.service.CustomerService;
 import br.com.heraoliveira.hcommerce.service.OrderService;
 import br.com.heraoliveira.hcommerce.service.ProductService;
@@ -36,6 +37,7 @@ public class ConsoleApplication {
     ) {
         this(
                 new ProductService(productRepository),
+                new CartService(productRepository),
                 new CustomerService(
                         new CurrentCustomerRepository(),
                         new ViaCepService(new HttpClientFetcher())
@@ -51,6 +53,7 @@ public class ConsoleApplication {
     ) {
         this(
                 new ProductService(productRepository),
+                new CartService(productRepository),
                 new CustomerService(new CurrentCustomerRepository(), addressLookupService),
                 new OrderService(orderRepository)
         );
@@ -63,6 +66,7 @@ public class ConsoleApplication {
     ) {
         this(
                 new ProductService(productRepository),
+                new CartService(productRepository),
                 new CustomerService(currentCustomerRepository, new ViaCepService(new HttpClientFetcher())),
                 new OrderService(orderRepository)
         );
@@ -76,6 +80,7 @@ public class ConsoleApplication {
     ) {
         this(
                 new ProductService(productRepository),
+                new CartService(productRepository),
                 new CustomerService(currentCustomerRepository, addressLookupService),
                 new OrderService(orderRepository)
         );
@@ -83,16 +88,20 @@ public class ConsoleApplication {
 
     ConsoleApplication(
             ProductService productService,
+            CartService cartService,
             CustomerService customerService,
             OrderService orderService
     ) {
         this.productConsoleHandler = new ProductConsoleHandler(
-                Objects.requireNonNull(productService, "Product service cannot be null.")
+                Objects.requireNonNull(productService, "Product service cannot be null."),
+                Objects.requireNonNull(cartService, "Cart service cannot be null.")
         );
         this.customerConsoleHandler = new CustomerConsoleHandler(
                 Objects.requireNonNull(customerService, "Customer service cannot be null.")
         );
-        this.cartConsoleHandler = new CartConsoleHandler();
+        this.cartConsoleHandler = new CartConsoleHandler(
+                Objects.requireNonNull(cartService, "Cart service cannot be null.")
+        );
         this.orderConsoleHandler = new OrderConsoleHandler(
                 Objects.requireNonNull(orderService, "Order service cannot be null.")
         );
@@ -145,19 +154,19 @@ public class ConsoleApplication {
                 ConsolePrinter.printCustomer(registeredCustomer);
             }
             case "2" -> productConsoleHandler.registerProduct(scanner);
-            case "3" -> productConsoleHandler.printCatalog();
-            case "4" -> productConsoleHandler.addProductToCart(scanner, cart);
-            case "5" -> cartConsoleHandler.updateCartItemQuantity(scanner, cart);
-            case "6" -> cartConsoleHandler.removeCartItem(scanner, cart);
-            case "7" -> ConsolePrinter.printCart(cart);
-            case "8" -> orderConsoleHandler.printSavedOrders();
-            case "9" -> {
+            case "3" -> productConsoleHandler.removeProduct(scanner, cart);
+            case "4" -> productConsoleHandler.searchProducts(scanner);
+            case "5" -> productConsoleHandler.printCatalog();
+            case "6" -> productConsoleHandler.addProductToCart(scanner, cart);
+            case "7" -> cartConsoleHandler.updateCartItemQuantity(scanner, cart);
+            case "8" -> cartConsoleHandler.removeCartItem(scanner, cart);
+            case "9" -> ConsolePrinter.printCart(cart);
+            case "10" -> {
                 if (orderConsoleHandler.finalizeOrder(customer, cart)) {
                     cart = new Cart();
                 }
             }
-            case "10" -> productConsoleHandler.searchProducts(scanner);
-            case "11" -> productConsoleHandler.removeProduct(scanner, cart);
+            case "11" -> orderConsoleHandler.printSavedOrders();
             case "0" -> {
                 System.out.println("\nShutting down. See you later!");
                 return false;

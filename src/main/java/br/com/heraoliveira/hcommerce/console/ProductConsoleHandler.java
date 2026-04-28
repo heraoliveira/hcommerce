@@ -5,6 +5,7 @@ import br.com.heraoliveira.hcommerce.exception.ProductNotFoundException;
 import br.com.heraoliveira.hcommerce.exception.ProductRemovalNotAllowedException;
 import br.com.heraoliveira.hcommerce.model.Cart;
 import br.com.heraoliveira.hcommerce.model.Product;
+import br.com.heraoliveira.hcommerce.service.CartService;
 import br.com.heraoliveira.hcommerce.service.ProductService;
 
 import java.math.BigDecimal;
@@ -16,9 +17,11 @@ final class ProductConsoleHandler {
     private static final String CANCEL_OPTION_TEXT = "0";
 
     private final ProductService productService;
+    private final CartService cartService;
 
-    ProductConsoleHandler(ProductService productService) {
+    ProductConsoleHandler(ProductService productService, CartService cartService) {
         this.productService = productService;
+        this.cartService = cartService;
     }
 
     void registerProduct(Scanner scanner) {
@@ -118,8 +121,9 @@ final class ProductConsoleHandler {
             }
 
             try {
+                productService.findProductById(productId);
                 int quantity = ConsoleInput.readPositiveInt(scanner, "Quantity: ");
-                productService.addProductToCart(cart, productId, quantity);
+                cartService.addProductToCart(cart, productId, quantity);
 
                 System.out.println("\nProduct added to the cart.");
                 return;
