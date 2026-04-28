@@ -17,7 +17,7 @@ final class OrderConsoleHandler {
 
         OrderService.FinalizeOrderResult result = orderService.finalizeOrder(customer, cart);
         if (!result.completed()) {
-            System.out.println(result.message());
+            System.out.println(messageFor(result.failureReason()));
             return false;
         }
 
@@ -28,5 +28,12 @@ final class OrderConsoleHandler {
 
     void printSavedOrders() {
         ConsolePrinter.printSavedOrders(orderService.findSavedOrders());
+    }
+
+    private static String messageFor(OrderService.FinalizeOrderFailure failureReason) {
+        return switch (failureReason) {
+            case MISSING_CUSTOMER -> "Register a customer before finalizing the order.";
+            case EMPTY_CART -> "Cart is empty. Add products before finalizing the order.";
+        };
     }
 }

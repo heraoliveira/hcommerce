@@ -10,9 +10,6 @@ import java.util.List;
 import java.util.Objects;
 
 public class OrderService {
-    private static final String MISSING_CUSTOMER_MESSAGE = "Register a customer before finalizing the order.";
-    private static final String EMPTY_CART_MESSAGE = "Cart is empty. Add products before finalizing the order.";
-
     private final OrderRepository orderRepository;
 
     public OrderService(OrderRepository orderRepository) {
@@ -21,11 +18,15 @@ public class OrderService {
 
     public FinalizeOrderResult finalizeOrder(Customer customer, Cart cart) {
         if (customer == null) {
-            return FinalizeOrderResult.failure(MISSING_CUSTOMER_MESSAGE);
+            return FinalizeOrderResult.failure(FinalizeOrderFailure.MISSING_CUSTOMER);
+        }
+
+        if (cart == null) {
+            throw new InvalidCartException("Cart cannot be null.");
         }
 
         if (cart.isEmpty()) {
-            return FinalizeOrderResult.failure(EMPTY_CART_MESSAGE);
+            return FinalizeOrderResult.failure(FinalizeOrderFailure.EMPTY_CART);
         }
 
         Order order = Order.fromCart(
@@ -42,13 +43,18 @@ public class OrderService {
         return orderRepository.findAll();
     }
 
-    public record FinalizeOrderResult(boolean completed, Order order, String message) {
+    public enum FinalizeOrderFailure {
+        MISSING_CUSTOMER,
+        EMPTY_CART
+    }
+
+    public record FinalizeOrderResult(boolean completed, Order order, FinalizeOrderFailure failureReason) {
         public static FinalizeOrderResult success(Order order) {
             return new FinalizeOrderResult(true, order, null);
         }
 
-        public static FinalizeOrderResult failure(String message) {
-            return new FinalizeOrderResult(false, null, message);
+        public static FinalizeOrderResult failure(FinalizeOrderFailure failureReason) {
+            return new FinalizeOrderResult(false, null, failureReason);
         }
     }
 }
