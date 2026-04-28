@@ -87,6 +87,18 @@ class RepositoryPathInjectionTest {
     }
 
     @Test
+    void shouldThrowWhenCustomerJsonFileContainsInvalidJson() throws Exception {
+        Files.writeString(tempDirectory.resolve("customer.json"), "{invalid-json}");
+
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
+                () -> new CurrentCustomerRepository(tempDirectory)
+        );
+
+        assertEquals("Failed to load the current customer from the JSON file.", exception.getMessage());
+    }
+
+    @Test
     void shouldTreatAnEmptyProductsJsonFileAsAnEmptyRepository() throws Exception {
         Files.writeString(tempDirectory.resolve("products.json"), "");
 
