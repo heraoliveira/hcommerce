@@ -2,16 +2,17 @@ package br.com.heraoliveira.hcommerce.model;
 
 import br.com.heraoliveira.hcommerce.exception.InvalidDataException;
 import br.com.heraoliveira.hcommerce.util.ZipValidation;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record Address(
-        @JsonProperty("cep") String zip,
-        @JsonProperty("logradouro") String street,
-        @JsonProperty("bairro") String neighborhood,
-        @JsonProperty("localidade") String city,
-        @JsonProperty("uf") String state
+        @JsonProperty("zip") @JsonAlias("cep") String zip,
+        @JsonProperty("street") @JsonAlias("logradouro") String street,
+        @JsonProperty("neighborhood") @JsonAlias("bairro") String neighborhood,
+        @JsonProperty("city") @JsonAlias("localidade") String city,
+        @JsonProperty("state") @JsonAlias("uf") String state
 ){
 
     public Address {

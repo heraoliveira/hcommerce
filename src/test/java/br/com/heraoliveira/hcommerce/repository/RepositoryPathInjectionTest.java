@@ -46,8 +46,19 @@ class RepositoryPathInjectionTest {
         orderRepository.save(order);
 
         OrderRepository reloadedRepository = new OrderRepository(tempDirectory);
+        String fileContent = readFile(tempDirectory.resolve("orders.json"));
 
         assertTrue(Files.exists(tempDirectory.resolve("orders.json")));
+        assertTrue(fileContent.contains("\"zip\""));
+        assertTrue(fileContent.contains("\"street\""));
+        assertTrue(fileContent.contains("\"neighborhood\""));
+        assertTrue(fileContent.contains("\"city\""));
+        assertTrue(fileContent.contains("\"state\""));
+        assertFalse(fileContent.contains("\"cep\""));
+        assertFalse(fileContent.contains("\"logradouro\""));
+        assertFalse(fileContent.contains("\"bairro\""));
+        assertFalse(fileContent.contains("\"localidade\""));
+        assertFalse(fileContent.contains("\"uf\""));
         assertEquals(1, reloadedRepository.findAll().size());
         assertEquals(OrderStatus.COMPLETED, reloadedRepository.findAll().get(0).getOrderStatus());
         assertEquals(2, reloadedRepository.findAll().get(0).getItems().size());
@@ -61,8 +72,19 @@ class RepositoryPathInjectionTest {
         currentCustomerRepository.saveCurrent(customer);
 
         CurrentCustomerRepository reloadedRepository = new CurrentCustomerRepository(tempDirectory);
+        String fileContent = readFile(tempDirectory.resolve("customer.json"));
 
         assertTrue(Files.exists(tempDirectory.resolve("customer.json")));
+        assertTrue(fileContent.contains("\"zip\""));
+        assertTrue(fileContent.contains("\"street\""));
+        assertTrue(fileContent.contains("\"neighborhood\""));
+        assertTrue(fileContent.contains("\"city\""));
+        assertTrue(fileContent.contains("\"state\""));
+        assertFalse(fileContent.contains("\"cep\""));
+        assertFalse(fileContent.contains("\"logradouro\""));
+        assertFalse(fileContent.contains("\"bairro\""));
+        assertFalse(fileContent.contains("\"localidade\""));
+        assertFalse(fileContent.contains("\"uf\""));
         assertTrue(reloadedRepository.findCurrent().isPresent());
         assertEquals("Ana", reloadedRepository.findCurrent().orElseThrow().getName());
         assertEquals("ana@example.com", reloadedRepository.findCurrent().orElseThrow().getEmail());
@@ -84,6 +106,79 @@ class RepositoryPathInjectionTest {
         CurrentCustomerRepository currentCustomerRepository = new CurrentCustomerRepository(tempDirectory);
 
         assertTrue(currentCustomerRepository.findCurrent().isEmpty());
+    }
+
+    @Test
+    void shouldLoadCurrentCustomerWithLegacyViaCepAddressFieldNames() throws Exception {
+        Files.writeString(tempDirectory.resolve("customer.json"), """
+                {
+                  "name": "Ana",
+                  "email": "ana@example.com",
+                  "address": {
+                    "cep": "01001-000",
+                    "logradouro": "Praca da Se",
+                    "bairro": "Se",
+                    "localidade": "Sao Paulo",
+                    "uf": "SP"
+                  }
+                }
+                """);
+
+        CurrentCustomerRepository currentCustomerRepository = new CurrentCustomerRepository(tempDirectory);
+
+        assertTrue(currentCustomerRepository.findCurrent().isPresent());
+        assertEquals("Ana", currentCustomerRepository.findCurrent().orElseThrow().getName());
+        assertEquals("01001000", currentCustomerRepository.findCurrent().orElseThrow().getAddress().zip());
+    }
+
+    @Test
+    void shouldLoadOrdersWithLegacyViaCepAddressFieldNames() throws Exception {
+        Files.writeString(tempDirectory.resolve("orders.json"), """
+                [
+                  {
+                    "id": 1,
+                    "orderDate": "2026-05-01T10:00:00",
+                    "customer": {
+                      "name": "Ana",
+                      "email": "ana@example.com",
+                      "address": {
+                        "cep": "01001-000",
+                        "logradouro": "Praca da Se",
+                        "bairro": "Se",
+                        "localidade": "Sao Paulo",
+                        "uf": "SP"
+                      }
+                    },
+                    "items": [
+                      {
+                        "productId": 1,
+                        "productName": "Notebook",
+                        "productPrice": 1200.00,
+                        "quantity": 1
+                      },
+                      {
+                        "productId": 2,
+                        "productName": "Mouse",
+                        "productPrice": 400.00,
+                        "quantity": 1
+                      }
+                    ],
+                    "subtotal": 1600.00,
+                    "discountAmount": 320.00,
+                    "total": 1280.00,
+                    "orderStatus": "COMPLETED"
+                  }
+                ]
+                """);
+
+        OrderRepository orderRepository = new OrderRepository(tempDirectory);
+
+        assertEquals(1, orderRepository.findAll().size());
+        Order loadedOrder = orderRepository.findAll().get(0);
+        assertEquals("Ana", loadedOrder.getCustomer().getName());
+        assertEquals("01001000", loadedOrder.getCustomer().getAddress().zip());
+        assertEquals("Praca da Se", loadedOrder.getCustomer().getAddress().street());
+        assertEquals("Sao Paulo", loadedOrder.getCustomer().getAddress().city());
     }
 
     @Test
@@ -152,5 +247,13 @@ class RepositoryPathInjectionTest {
         cart.addItem(new Product(1L, "Notebook", "Portable computer", new BigDecimal("1200.00")), 1);
         cart.addItem(new Product(2L, "Mouse", "Wireless mouse", new BigDecimal("400.00")), 1);
         return cart;
+    }
+
+    private static String readFile(Path filePath) {
+        try {
+            return Files.readString(filePath);
+        } catch (Exception e) {
+            throw new AssertionError("Unable to read file " + filePath, e);
+        }
     }
 }
